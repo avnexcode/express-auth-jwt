@@ -1,18 +1,19 @@
 import express from 'express';
 
-import MessageResponse from '../interfaces/MessageResponse';
-import emojis from './emojis';
 import auth from './auth';
-
+import profile from './profile';
 const router = express.Router();
 
-router.get<{}, MessageResponse>('/', (req, res) => {
-  res.json({
-    message: 'API - 👋🌎🌍🌏',
-  });
+router.get('/', (req, res, next) => {
+  const result = {
+    statusCode: 200,
+    message: 'Express Auth Jwt API',
+  };
+  res.locals = result;
+  next();
 });
 
-router.use('/emojis', emojis);
 router.use('/auth', auth);
+router.use('/profile', profile);
 
 export default router;

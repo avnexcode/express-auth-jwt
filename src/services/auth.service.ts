@@ -1,6 +1,17 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { getUserByEmail } from './user.service';
+import { sign } from 'jsonwebtoken';
+import { createUser, getUserByEmail } from './user.service';
+import JwtPayload from '../interfaces/JwtPayload';
+import { User } from '../@types';
+
+export const registerService = async (registerData: User) => {
+  const user = await createUser(registerData);
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+  };
+};
 
 export const loginService = async (email: string, password: string) => {
   if (!(email && password)) {
@@ -19,18 +30,18 @@ export const loginService = async (email: string, password: string) => {
     throw new Error('Invalid password');
   }
 
-  const payload = {
+  const payload: JwtPayload = {
     id: user.id,
   };
 
   const secret = process.env.SECRET_JWT!;
-  const expiresIn = 60 * 60 * 24;
-  const token = jwt.sign(payload, secret, { expiresIn });
+  const expiresIn = 60;
+  // const expiresIn = 60 * 60 * 24;
+
+  const token = sign(payload, secret, { expiresIn });
 
   return {
-    user: {
-      id: user.id,
-    },
-    token,
+    accessToken: token,
+    user_id: user.id,
   };
 };
