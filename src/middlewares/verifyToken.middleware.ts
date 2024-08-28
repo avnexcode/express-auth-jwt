@@ -6,15 +6,26 @@ import { verify } from 'jsonwebtoken';
 export const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction): void => {
   const authHeader = req.header('Authorization');
   const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  const cookie = req.cookies.jwt;
 
   if (!process.env.SECRET_JWT) {
-    res.status(500).json({ error: 'Internal server error' });
-    return;
+    res.status(500);
+    throw new Error('Internal server error');
+  }
+
+  if (!cookie) {
+    res.status(401);
+    throw new Error('Tidak ada user login');
   }
 
   if (!token) {
-    res.status(401).json({ error: 'Access denied. No token provided.' });
-    return;
+    res.status(401);
+    throw new Error('Access denied. No token provided');
+  }
+
+  if (token !== cookie) {
+    res.status(401);
+    throw new Error('Access denied. Token invalidate');
   }
 
   try {

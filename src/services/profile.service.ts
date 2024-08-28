@@ -2,6 +2,7 @@ import { destroyUser, findUserByEmail, updateUser } from '../repositories/user.r
 import { User } from '../@types';
 import { getUserById } from './user.service';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import Logging from '../helpers/Logging';
 
 export const getProfile = async (token: string) => {
   if (!token) {
@@ -10,8 +11,8 @@ export const getProfile = async (token: string) => {
 
   const secret = process.env.SECRET_JWT!;
   const claims = jwt.verify(token, secret) as JwtPayload;
-
-  const user = await getUserById(claims.id);
+  Logging.warning(claims);
+  const user = await getUserById(claims.user_id);
 
   const { password, ...data } = user;
 

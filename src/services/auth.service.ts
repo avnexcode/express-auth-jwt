@@ -31,12 +31,12 @@ export const loginService = async (email: string, password: string) => {
   }
 
   const payload: JwtPayload = {
-    id: user.id,
+    user_id: user.id,
   };
 
   const secret = process.env.SECRET_JWT!;
-  const expiresIn = 60;
-  // const expiresIn = 60 * 60 * 24;
+  // const expiresIn = 60;
+  const expiresIn = 60 * 60 * 24;
 
   const token = sign(payload, secret, { expiresIn });
 
